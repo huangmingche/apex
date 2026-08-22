@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://gitcode.com/openharmony/manifest.git",
+  "tag": "OpenHarmony-v7.0-Release",
+  "commit": "2cf9dc1ee5c1738f1aa5ef31a96c4de705e8bd1f",
+  "tagObject": "af9147402dd7f7ad1c0cd6e7adabf73bfe9cfcdf",
+  "tree": "a91df637e54b9940434a7cbad952ef5c2c895e60",
+  "referencePath": ".submodules/openharmony",
+  "manifest": {
+    "path": "manifests/openharmony-7.0.xml",
+    "sha256": "a801c6578e56168760c47b6859b3bfa3a22c00eb411e46ee64085e07585f2180",
+    "projectCount": 518
+  },
+  "release": {
+    "taggerDate": "2026-08-21T17:06:02Z",
+    "commitDate": "2026-08-21T17:03:30Z",
+    "timeMeaning": "Git object timestamps, not an announcement or first-publication timestamp"
+  },
+  "tooling": {
+    "repoVersion": "2.54",
+    "repoRepository": "https://gerrit.googlesource.com/git-repo",
+    "repoCommit": "97dc5c1bd9527c2abe2183b16a4b7ef037dc34a7"
+  },
+  "gitlinkSources": [
+    {
+      "parent": "arkcompiler/runtime_core",
+      "path": "static_core/tools/plugins/ecmascript",
+      "repository": "https://gitcode.com/openharmony-sig/arkcompiler_ets_runtime.git",
+      "commit": "cc2552eb551e806e6892fe6871de7b173943afb6",
+      "evidence": {
+        "file": "arkcompiler/runtime_core/static_core/README.md",
+        "matches": [
+          {
+            "line": 43,
+            "text": "git clone --branch ${BASELINE_BRANCH} https://gitcode.com/openharmony-sig/arkcompiler_ets_runtime.git runtime_core/static_core/plugins/ecmascript"
+          }
+        ]
+      }
+    },
+    {
+      "parent": "test/testfwk/arkxtest",
+      "path": "acl/developtools_integration_verification",
+      "repository": "https://gitcode.com/openharmony/developtools_integration_verification.git",
+      "commit": "a3204c2a52f6cd94c5f4e812da34c16b7bc358eb",
+      "evidence": {
+        "official_manifest_project": "developtools_integration_verification",
+        "official_manifest_path": "developtools/integration_verification",
+        "official_manifest_url": "https://gitcode.com/openharmony/developtools_integration_verification.git",
+        "pinned_commit_also_present_in_official_manifest_repo": true
+      }
+    }
+  ]
+}

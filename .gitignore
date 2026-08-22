@@ -1,0 +1,17 @@
+# Dependencies and build outputs must stay outside the source repository.
+node_modules/
+.artifacts/
+.dsh-build/
+dist/
+lib/
+*.tsbuildinfo
+*.node
+*.log
+.env
+.DS_Store
+.vscode/
+.idea/
+
+# Reserved upstream source workspaces retain only their descriptions.
+.sources/*/*
+!.sources/*/README.md

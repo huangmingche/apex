@@ -1,0 +1,52 @@
+{
+  "name": "apex",
+  "version": "0.1.1-rc.2",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "description": "Apex — an open-source AI Operating System built on DeepSeek Harness and OpenHarmony.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huangmingche/apex.git"
+  },
+  "homepage": "https://github.com/huangmingche/apex",
+  "bugs": {
+    "url": "https://github.com/huangmingche/apex/issues"
+  },
+  "apex": {
+    "upstream": {
+      "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+      "commit": "b150a551b8d465e31e418e1b2eaf5e79bbb7d28e",
+      "version": "0.1.1-rc.2",
+      "path": ".submodules/deepseek-harness",
+      "tag": "dsh-v0.1.1-rc.2"
+    }
+  },
+  "scripts": {
+    "verify": "node scripts/dsh-source/verify.mjs",
+    "prepare:runtime": "node scripts/apex/prepare.mjs",
+    "install:runtime": "node scripts/apex/run.mjs install",
+    "build": "node scripts/apex/run.mjs build",
+    "test:wrapper": "node --test scripts/apex/*.test.mjs scripts/ci/*.test.mjs scripts/paper-source/*.test.mjs && pnpm run test:oh",
+    "test:ci": "node --test scripts/ci/*.test.mjs scripts/paper-source/*.test.mjs",
+    "ci:scope": "node scripts/ci/scope.mjs",
+    "paper:verify": "node scripts/paper-source/verify.mjs",
+    "test:oh": "node scripts/openharmony/run.mjs test",
+    "test": "pnpm run test:wrapper && node scripts/apex/run.mjs test",
+    "test:e2e": "node scripts/apex/run.mjs test:e2e",
+    "lint": "node scripts/apex/run.mjs lint:contracts-ready",
+    "doc-sync": "node scripts/apex/run.mjs doc-sync",
+    "dsh": "node scripts/apex/run.mjs dsh",
+    "web": "node scripts/apex/run.mjs web",
+    "dev:web": "node scripts/apex/run.mjs dev:web",
+    "runtime": "node scripts/apex/run.mjs",
+    "oh:lock": "node scripts/openharmony/run.mjs lock",
+    "oh:verify": "node scripts/openharmony/run.mjs verify",
+    "oh:sync": "node scripts/openharmony/run.mjs sync",
+    "test:ci:pwsh": "python3 -B scripts/ci/verify-pwsh.py"
+  }
+}

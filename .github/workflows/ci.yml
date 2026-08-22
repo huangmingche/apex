@@ -1,0 +1,80 @@
+name: Apex
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - name: Determine check scope
+        id: scope
+        run: pnpm run ci:scope
+      - name: Verify Paper source
+        if: steps.scope.outputs.mode == 'paper'
+        run: pnpm run paper:verify
+      - name: Test Paper validation and CI scope
+        if: steps.scope.outputs.mode == 'paper'
+        run: pnpm run test:ci
+      - uses: actions/setup-python@v5
+        if: steps.scope.outputs.mode != 'paper'
+        with:
+          python-version: '3.12'
+      - run: pnpm run verify
+        if: steps.scope.outputs.mode != 'paper'
+      - run: pnpm run install:runtime
+        if: steps.scope.outputs.mode != 'paper'
+      - run: pnpm run build
+        if: steps.scope.outputs.mode != 'paper'
+      - name: Prepare PowerShell for headless PTY tests
+        if: steps.scope.outputs.mode != 'paper'
+        shell: bash
+        run: |
+          node -e 'console.log("Available CPUs:", require("node:os").availableParallelism())'
+          pwsh -NoLogo -NoProfile -Command '$PSVersionTable; Get-Module -ListAvailable PSReadLine | Select-Object Name, Version'
+          real_pwsh=$(command -v pwsh)
+          mkdir -p "$RUNNER_TEMP/apex-pwsh/bin"
+          {
+            printf '#!/usr/bin/env bash\nset -euo pipefail\n'
+            printf 'real_pwsh=%q\n' "$real_pwsh"
+            cat <<'SCRIPT'
+          # Only the upstream interactive PTY invocation needs this adapter.
+          if [[ "$#" == 2 && "$1" == '-NoLogo' && "$2" == '-NoProfile' ]]; then
+            # Preserve CR input and suppress kernel echo during shell startup.
+            stty -echo -icanon -icrnl min 1 time 0
+            # A pipe avoids .NET cursor queries; the relay reads a nonzero fd
+            # so Linux stdin-wait detection does not mistake it for shell input.
+            # PSReadLine does not support redirected output; retain the
+            # interactive console without its per-prompt exception fallback.
+            # Initialize standard filesystem and output modules before test commands:
+            # first-use module loading can exceed the upstream 300 ms idle window.
+            exec "$real_pwsh" "$@" -NoExit -Command 'try { Remove-Module PSReadLine -ErrorAction Stop; Import-Module Microsoft.PowerShell.Management,Microsoft.PowerShell.Utility -ErrorAction Stop; Set-Location -LiteralPath $PWD.Path -ErrorAction Stop } catch { [Console]::Error.WriteLine($_); exit 1 }' > >(cat /dev/stdin)
+          fi
+          exec "$real_pwsh" "$@"
+          SCRIPT
+          } > "$RUNNER_TEMP/apex-pwsh/bin/pwsh"
+          chmod +x "$RUNNER_TEMP/apex-pwsh/bin/pwsh"
+          echo "$RUNNER_TEMP/apex-pwsh/bin" >> "$GITHUB_PATH"
+      - run: pnpm run test:ci:pwsh
+        if: steps.scope.outputs.mode != 'paper'
+      - run: pnpm run test --maxWorkers=2
+        if: steps.scope.outputs.mode != 'paper'
+      - run: pnpm run lint
+        if: steps.scope.outputs.mode != 'paper'
+      - run: pnpm run doc-sync
+        if: steps.scope.outputs.mode != 'paper'
+      - run: pnpm run verify
+        if: steps.scope.outputs.mode != 'paper'
